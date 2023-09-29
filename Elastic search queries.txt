@@ -1,0 +1,131 @@
+
+#get data of players with the team argentina
+GET fifa_worldcup_squads/_search
+{
+  "query": {
+    "match": {
+      "Team": "Argentina"
+    }
+  }
+}
+
+#get request to get data of all the players
+GET fifa_worldcup_squads/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+#post request which sends request and gets players with minimum wc goals greater than 0
+POST /fifa_worldcup_squads/_search
+{
+  "query": {
+    "range": {
+      "WC Goals": {
+        "gt": 0
+      }
+    }
+  }
+}
+
+#post request to view data of player with position forward
+POST /fifa_worldcup_squads/_search
+{
+  "query": {
+    "match": {
+      "Position": "Forward"
+    }
+  }
+}
+
+#if player is from argentina and wc goals > 0
+POST /fifa_worldcup_squads/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "Team": "Argentina" } },
+        { "range": { "WC Goals": { "gt": 0 } } }
+      ]
+    }
+  }
+}
+
+
+#Post request to get data with age from descending order
+GET /fifa_worldcup_squads/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "Age": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+#Top wc goalscorer of every country
+GET /fifa_worldcup_squads/_search
+{
+  "query": {
+    "exists": {
+      "field": "WC Goals"
+    }
+  },
+  "sort": [
+    {
+      "WC Goals": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+#players with most caps for every country
+GET /fifa_worldcup_squads/_search
+{
+  "size": 0,
+  "aggs": {
+    "max_caps_per_team": {
+      "terms": {
+        "field": "Team",
+        "size": 10
+      },
+      "aggs": {
+        "max_caps": {
+          "top_hits": {
+            "size": 1,
+            "_source": ["Player", "Caps"],
+            "sort": [{"Caps": "desc"}]
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
